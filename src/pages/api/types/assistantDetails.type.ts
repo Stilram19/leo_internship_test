@@ -1,14 +1,14 @@
-export default interface IAssistantDetails {
-    assistantId: string;
-    threadId: string;
+export interface AssistantDetails {
+    readonly assistantId: string;
+    readonly threadId: string;
     fileIds: string[];
-}
+};
 
 /**
- * this function is the type guard of IAssistantDetails
+ * this function is the type guard of AssistantDetails
  * @param obj the object to check.
  */
-export function isOfIAssistantDetailsType(obj: any): obj is IAssistantDetails {
+export function isOfIAssistantDetailsType(obj: any): obj is AssistantDetails {
     return (
         typeof obj === 'object' &&
         obj !== null &&

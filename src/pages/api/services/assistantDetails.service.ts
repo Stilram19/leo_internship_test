@@ -1,13 +1,13 @@
-import IAssistantDetails, { isOfIAssistantDetailsType } from "@/types/IAssistantDetails";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { openai } from "./openAiConf";
 import { AssistantCreateParams } from "openai/resources/beta/assistants.mjs";
+import { AssistantDetails, isOfIAssistantDetailsType } from "../types/assistantDetails.type";
 
 /**
  * @brief creates an assistant and a thread, and returns an assistant details
  * object
  */
-async function createAssistant(): Promise<IAssistantDetails> {
+async function createAssistant(): Promise<AssistantDetails> {
     const assistantConfig: AssistantCreateParams = {
         model: 'gpt-4o-mini',
         name: 'chatbot',
@@ -26,7 +26,7 @@ async function createAssistant(): Promise<IAssistantDetails> {
  * If no assistant exists, it creates one and returns it.
  * It returns undefined in case of an error
 */
-export default async function getAssistant(): Promise<IAssistantDetails | undefined> {
+export async function getAssistant(): Promise<AssistantDetails | undefined> {
     const assistantFilePath = process.env.ASSISTANT_DETAILS_PATH as string;
 
     if (!assistantFilePath) {
@@ -34,7 +34,7 @@ export default async function getAssistant(): Promise<IAssistantDetails | undefi
     }
 
     const fileExists = existsSync(assistantFilePath);
-    let assistantDetails: IAssistantDetails;
+    let assistantDetails: AssistantDetails;
 
     if (!fileExists) {
         assistantDetails = await createAssistant();
@@ -50,4 +50,18 @@ export default async function getAssistant(): Promise<IAssistantDetails | undefi
     }
 
     return (assistantDetails);
+}
+
+/**
+ * @brief updates the assistant details file
+ */
+export function updateAssistant(assistantDetails: AssistantDetails): void {
+    const assistantFilePath = process.env.ASSISTANT_DETAILS_PATH as string;
+
+    if (!assistantFilePath) {
+        console.log('error: assistantFilePath is undefined!');
+        return ;
+    }
+
+    writeFileSync(assistantFilePath, JSON.stringify(assistantDetails));
 }
