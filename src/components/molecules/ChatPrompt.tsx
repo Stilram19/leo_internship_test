@@ -7,15 +7,19 @@ import { ChatMessage, isOfChatMessageType } from '@/types/chatHistory.type';
 import { FiFileText } from 'react-icons/fi';
 
 interface ChatPromptProps {
+  disabled: boolean;
   updateMessages: (message: ChatMessage) => void;
 };
 
-const ChatPrompt:FC<ChatPromptProps> = ( { updateMessages } ) => {
+const ChatPrompt:FC<ChatPromptProps> = ( { disabled, updateMessages } ) => {
   const [input, setInput] = useState('');
   const [file, setFile] = useState<File | null>(null);
 
   const handleSend = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (disabled)
+        return ;
 
     if (!input.trim()) return;
     const text = input;

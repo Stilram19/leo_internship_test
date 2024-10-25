@@ -4,7 +4,6 @@ import { getMessageHistory } from './services/chat.service';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const response = await getMessageHistory();
-        console.log('messages: ', response);
         res.status(200).json(response);
     } catch (e: unknown) {
         console.log(e);

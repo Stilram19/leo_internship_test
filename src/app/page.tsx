@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 export default function Home() {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isHistoryLoading, setIsHistoryLoading] = useState(true);
 
 	const fetchMessageHistory = async (): Promise<ChatMessage[]> => {
 		try {
@@ -43,15 +44,15 @@ export default function Home() {
 	useEffect(() => {
 		(async () =>  {
 			const messageHistory = await fetchMessageHistory();
-
+			setIsHistoryLoading(false);
 			setMessages(messageHistory);
 		})();
 	}, []);
 
 	return (
 		<div className="max-w-2xl mx-auto flex flex-col gap-2">
-			<ChatHistory waiting={isLoading} messages={messages} />
-			<ChatPrompt updateMessages={updateMessages}/>
+			<ChatHistory waiting={isLoading || isHistoryLoading} messages={messages} />
+			<ChatPrompt disabled={isHistoryLoading} updateMessages={updateMessages}/>
 		</div>
   	);
 }

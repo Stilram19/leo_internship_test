@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { openai } from "./openAiConf";
 import { AssistantCreateParams } from "openai/resources/beta/assistants.mjs";
 import { AssistantDetails, isOfIAssistantDetailsType } from "../types/assistantDetails.type";
@@ -27,11 +27,13 @@ async function createAssistant(): Promise<AssistantDetails> {
  * It returns undefined in case of an error
 */
 export async function getAssistant(): Promise<AssistantDetails | undefined> {
-    const assistantFilePath = path.resolve(process.cwd(), 'assets', 'assitant_details.json');
+    const assetsDir = path.join(process.cwd(), 'src', 'pages', 'api', 'assets');
 
-    if (!assistantFilePath) {
-        return (undefined);
+    if (!existsSync(assetsDir)) {
+        mkdirSync(assetsDir);
     }
+
+    const assistantFilePath = path.resolve(assetsDir, 'assitant_details.json');
 
     const fileExists = existsSync(assistantFilePath);
     let assistantDetails: AssistantDetails;
@@ -56,12 +58,14 @@ export async function getAssistant(): Promise<AssistantDetails | undefined> {
  * @brief updates the assistant details file
  */
 export function updateAssistant(assistantDetails: AssistantDetails): void {
-    const assistantFilePath = path.resolve(process.cwd(), 'assets', 'assitant_details.json');
+    const assetsDir = path.join(process.cwd(), 'src', 'pages', 'api', 'assets');
 
-    if (!assistantFilePath) {
-        console.log('error: assistantFilePath is undefined!');
-        return ;
+    if (!existsSync(assetsDir)) {
+        mkdirSync(assetsDir);
     }
+
+    const assistantFilePath = path.resolve(assetsDir, 'assitant_details.json');
+
 
     writeFileSync(assistantFilePath, JSON.stringify(assistantDetails));
 }
