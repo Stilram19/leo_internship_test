@@ -52,7 +52,7 @@ export default function Home() {
 	return (
 		<div className="max-w-2xl mx-auto flex flex-col gap-2">
 			<ChatHistory waiting={isLoading || isHistoryLoading} messages={messages} />
-			<ChatPrompt disabled={isHistoryLoading} updateMessages={updateMessages}/>
+			<ChatPrompt disabled={isHistoryLoading || isLoading} updateMessages={updateMessages}/>
 		</div>
   	);
 }
