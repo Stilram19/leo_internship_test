@@ -24,7 +24,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             const originalFilename = uploadedFile.originalFilename ?? 'uploaded_file'; // Ensure original name is used
             const extension = path.extname(originalFilename);
 
-            const uploadDir = path.join(process.cwd(), 'src', 'pages', 'api', 'uploads');
+            // const uploadDir = path.join(__dirname, 'uploads');
+            const uploadDir = path.join('/tmp', 'uploads');
 
             if (!existsSync(uploadDir)) {
                 mkdirSync(uploadDir);

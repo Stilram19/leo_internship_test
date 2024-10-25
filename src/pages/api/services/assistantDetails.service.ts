@@ -27,7 +27,8 @@ async function createAssistant(): Promise<AssistantDetails> {
  * It returns undefined in case of an error
 */
 export async function getAssistant(): Promise<AssistantDetails | undefined> {
-    const assetsDir = path.join(__dirname, '..', 'assets');
+    // const assetsDir = path.join(__dirname, '..', 'assets');
+    const assetsDir = path.join('/tmp', 'assets');
 
     if (!existsSync(assetsDir)) {
         mkdirSync(assetsDir);
@@ -58,7 +59,8 @@ export async function getAssistant(): Promise<AssistantDetails | undefined> {
  * @brief updates the assistant details file
  */
 export function updateAssistant(assistantDetails: AssistantDetails): void {
-    const assetsDir = path.join(__dirname, '..', 'assets');
+    // const assetsDir = path.join(__dirname, '..', 'assets');
+    const assetsDir = path.join('/tmp', 'assets');
 
     if (!existsSync(assetsDir)) {
         mkdirSync(assetsDir);
