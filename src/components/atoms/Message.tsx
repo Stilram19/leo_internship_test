@@ -1,7 +1,8 @@
 import { ChatMessage } from "@/types/chatHistory.type";
+import { dayAndTimeDateFormat } from "@/utils/dateFormatter";
 import { FC } from "react";
 
-const Message:FC<ChatMessage> = ( { message, role, timestamp } ) => {
+const Message:FC<ChatMessage> = ( { content, role, created_at } ) => {
     return (
         <div
             className={`mb-4 flex ${
@@ -15,9 +16,9 @@ const Message:FC<ChatMessage> = ( { message, role, timestamp } ) => {
                 : 'bg-gray-300 text-gray-900 rounded-tl-none'
             }`}
             >
-            <p className="text-sm">{message}</p>
+            <p className="text-sm">{content}</p>
             <span className="block text-xs text-gray-500 mt-1 text-right">
-                {timestamp}
+                {dayAndTimeDateFormat(created_at * 1000)}
             </span>
             </div>
         </div>

@@ -1,6 +1,8 @@
 import formidable from 'formidable';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getResponse, uploadFile } from './services/chat.service';
+import path from 'path';
+import { existsSync, mkdirSync, renameSync, unlinkSync } from 'fs';
 
 export const config = {
     api: {
@@ -9,7 +11,7 @@ export const config = {
 };
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-    const form = new formidable.IncomingForm();
+    const form = formidable({});
 
     form.parse(req, async (err, fields, files) => {
         if (err) {
@@ -19,7 +21,20 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         const uploadedFile = files?.file?.[0];
 
         if (uploadedFile !== undefined) {
-            await uploadFile(uploadedFile.filepath);
+            const originalFilename = uploadedFile.originalFilename ?? 'uploaded_file'; // Ensure original name is used
+            const extension = path.extname(originalFilename);
+
+            const uploadDir = path.join(process.cwd(), 'src', 'pages', 'api', 'uploads');
+
+            if (!existsSync(uploadDir)) {
+                mkdirSync(uploadDir);
+            }
+
+            const destinationPath = path.join(uploadDir, `${Date.now()}${extension}`);
+            renameSync(uploadedFile.filepath, destinationPath);
+            await uploadFile(destinationPath);
+            // remove the new file from uploads
+            unlinkSync(destinationPath);
         }
 
         const message = fields.message?.[0];
@@ -32,6 +47,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             const response = await getResponse(message);
             res.status(200).json(response);
         } catch (e) {
+            console.log(e);
             return res.status(500).json({ error: "failed to process request" })
         }
     });

@@ -3,10 +3,11 @@ import { useState, ChangeEvent, FormEvent, FC } from 'react';
 import FormButton from '../atoms/FormButton';
 import FileInput from '../atoms/FileInput';
 import TextInput from '../atoms/TextInput';
-import { ChatMessage } from '@/types/chatHistory.type';
+import { ChatMessage, isOfChatMessageType } from '@/types/chatHistory.type';
+import { FiFileText } from 'react-icons/fi';
 
 interface ChatPromptProps {
-  updateMessages: (userMessage: ChatMessage, assistantMessage: ChatMessage) => void;
+  updateMessages: (message: ChatMessage) => void;
 };
 
 const ChatPrompt:FC<ChatPromptProps> = ( { updateMessages } ) => {
@@ -17,27 +18,44 @@ const ChatPrompt:FC<ChatPromptProps> = ( { updateMessages } ) => {
     e.preventDefault();
 
     if (!input.trim()) return;
+    const text = input;
+    setInput('');
+
+    updateMessages({
+      role: 'user',
+      content: text,
+      created_at: Date.now() / 1000,
+      id: Date.now().toString(),
+    })
 
     try {
       const formData = new FormData();
-      formData.append('message', input);
-      if (file) formData.append('file', file);
+      formData.append('message', text);
+      if (file) {
+        formData.append('file', file);
+        setFile(null);
+      }
 
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/chatResponse', {
         method: 'POST',
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error("response is not ok!")
+      }
+
       const data = await response.json();
 
-      // typeGuard for [ChatMessage, ChatMessage]
-      // set both messages
+      if (isOfChatMessageType(data) === false) {
+        throw new Error('response is not of type [ChatMessage, ChatMessage]');
+      }
+
+      updateMessages(data);
     } catch (error) {
       console.error('Error sending message:', error);
-    } finally {
-      setInput('');
-      setFile(null);
     }
+
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -46,11 +64,19 @@ const ChatPrompt:FC<ChatPromptProps> = ( { updateMessages } ) => {
   };
 
   return (
-    <form className="flex items-center gap-3 p-4 border-t border-gray-300" onSubmit={handleSend}>
-      <FileInput callback={handleFileChange} />
-      <TextInput callback={setInput} value={input} />
-      <FormButton text='Send'/>
-    </form>
+    <div className='flex flex-col items-center w-full gap-1'>
+      {file !== null ?
+        <span className='flex items-center gap-1'>
+            <FiFileText />
+            <p>{file.name}</p>
+        </span> 
+        : null}
+      <form className="w-full flex items-center gap-3" onSubmit={handleSend}>
+        <FileInput callback={handleFileChange} />
+        <TextInput callback={setInput} value={input} />
+        <FormButton text='Send'/>
+      </form>
+    </div>
   );
 };
 

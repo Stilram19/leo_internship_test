@@ -1,4 +1,3 @@
-
 export default interface Message {
     role: "user" | "assistant";
     id: string;

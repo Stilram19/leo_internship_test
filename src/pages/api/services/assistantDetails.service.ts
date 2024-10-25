@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { openai } from "./openAiConf";
 import { AssistantCreateParams } from "openai/resources/beta/assistants.mjs";
 import { AssistantDetails, isOfIAssistantDetailsType } from "../types/assistantDetails.type";
+import path from "path";
 
 /**
  * @brief creates an assistant and a thread, and returns an assistant details
@@ -16,9 +17,8 @@ async function createAssistant(): Promise<AssistantDetails> {
 
     const assistant = await openai.beta.assistants.create(assistantConfig);
     const thread = await openai.beta.threads.create();
-    const fileIds: string[] = [];
 
-    return { assistantId: assistant.id, threadId: thread.id, fileIds };
+    return { assistantId: assistant.id, threadId: thread.id, fileIds: [] };
 }
 
 /**
@@ -27,7 +27,7 @@ async function createAssistant(): Promise<AssistantDetails> {
  * It returns undefined in case of an error
 */
 export async function getAssistant(): Promise<AssistantDetails | undefined> {
-    const assistantFilePath = process.env.ASSISTANT_DETAILS_PATH as string;
+    const assistantFilePath = path.resolve(process.cwd(), 'assets', 'assitant_details.json');
 
     if (!assistantFilePath) {
         return (undefined);
@@ -56,7 +56,7 @@ export async function getAssistant(): Promise<AssistantDetails | undefined> {
  * @brief updates the assistant details file
  */
 export function updateAssistant(assistantDetails: AssistantDetails): void {
-    const assistantFilePath = process.env.ASSISTANT_DETAILS_PATH as string;
+    const assistantFilePath = path.resolve(process.cwd(), 'assets', 'assitant_details.json');
 
     if (!assistantFilePath) {
         console.log('error: assistantFilePath is undefined!');
