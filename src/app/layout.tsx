@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import SocketProvider from "@/context/SocketProvider";
 
 
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ export default function App({
       <body
         className={`antialiased`}
       >
-        {children}
+        <SocketProvider>
+          {children}
+        </SocketProvider>
       </body>
     </html>
   );

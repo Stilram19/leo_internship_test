@@ -11,6 +11,10 @@ export interface ChatHistoryProps {
 	waiting: boolean;
 }
 
+export interface FileUploadResponse {
+	fileId: string;
+};
+
 /**
  * 
  * @param obj to be checked
@@ -45,3 +49,16 @@ export function isOfChatMessageArrayType(arr: unknown): arr is ChatMessage[] {
 	return (arr.every(elem => isOfChatMessageType(elem)));
 }
 
+
+/**
+ * 
+ * @param obj to be checked
+ * @returns true if the obj is of FileUploadResponse type, false otherwise
+ */
+export function isOfFileUploadResponseType(obj: unknown): obj is FileUploadResponse {
+	return (typeof obj === 'object'
+		&& obj !== null
+		&& 'fileId' in obj
+		&& typeof obj.fileId === 'string'
+	);
+}

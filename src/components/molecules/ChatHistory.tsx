@@ -10,7 +10,7 @@ const ChatHistory: FC<ChatHistoryProps> = ({ waiting, messages }) => {
 
 	return (
 		<div className="p-4 bg-gray-100 shadow-lg rounded-lg h-[500px] overflow-y-auto">
-			{messages.map((msg, index) => (
+			{messages.filter(msg => Boolean(msg.content)).map((msg, index) => (
 				<div key={msg.id} ref={index === messages.length - 1 ? tagRef : null}>
                 	<Message key={msg.id} {...msg} /> 
 				</div>
