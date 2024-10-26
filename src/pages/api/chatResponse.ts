@@ -19,6 +19,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         }
 
         const uploadedFile = files?.file?.[0];
+        let fileId: string | undefined = undefined;
 
         if (uploadedFile !== undefined) {
             const originalFilename = uploadedFile.originalFilename ?? 'uploaded_file'; // Ensure original name is used
@@ -33,7 +34,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
             const destinationPath = path.join(uploadDir, `${Date.now()}${extension}`);
             renameSync(uploadedFile.filepath, destinationPath);
-            await uploadFile(destinationPath);
+            fileId = await uploadFile(destinationPath);
             // remove the new file from uploads
             unlinkSync(destinationPath);
         }
@@ -45,7 +46,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         }
         
         try {
-            const response = await getResponse(message);
+            const response = await getResponse(message, fileId);
             res.status(200).json(response);
         } catch (e) {
             console.log(e);

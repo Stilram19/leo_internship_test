@@ -30,6 +30,7 @@ const ChatPrompt:FC<ChatPromptProps> = ( { disabled, updateMessages } ) => {
       content: text,
       created_at: Date.now() / 1000,
       id: Date.now().toString(),
+      isAttached: file !== null
     })
 
     try {

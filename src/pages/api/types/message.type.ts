@@ -3,4 +3,5 @@ export default interface Message {
     id: string;
     created_at: number;
     content: string;
+    isAttached: boolean;
 };

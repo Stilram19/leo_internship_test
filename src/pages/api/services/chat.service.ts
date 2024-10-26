@@ -2,13 +2,13 @@ import { createReadStream } from "fs";
 import { openai } from "./openAiConf";
 import { getAssistant, updateAssistant } from "./assistantDetails.service";
 import sleep from "./utils/sleep";
-import { TextContentBlock } from "openai/resources/beta/threads/messages.js";
+import { MessageCreateParams, TextContentBlock } from "openai/resources/beta/threads/messages.js";
 import Message from "../types/message.type";
 
 /**
- * @brief 
+ * @brief uploads the file and returns its id.
  */
-export async function uploadFile(filePath: string): Promise<void> {
+export async function uploadFile(filePath: string): Promise<string | undefined> {
     const newFile = await openai.files.create({
         file: createReadStream(filePath),
         purpose: 'assistants'
@@ -17,7 +17,7 @@ export async function uploadFile(filePath: string): Promise<void> {
     const assistantDetails = await getAssistant();
 
     if (assistantDetails === undefined) {
-        return ;
+        return (undefined);
     }
 
     // create a vector store including all the files
@@ -37,26 +37,36 @@ export async function uploadFile(filePath: string): Promise<void> {
     });
 
     updateAssistant({ ...assistantDetails, fileIds: [...assistantDetails.fileIds, newFile.id] });
-}
 
+    return (newFile.id);
+}
 
 /**
  * @brief sends the user's message and returns both of 
  * the user's message and the AI assistant's response
  * @param text the user's message text to send to the AI assistant
  */
-export async function getResponse(text: string): Promise<Message> {
+export async function getResponse(text: string, attachedFileId?: string): Promise<Message> {
     const assistantDetails = await getAssistant();
 
     if (assistantDetails === undefined) {
         throw new Error('assistantDetails not found');
     }
 
-    // passing the user's message into the main thread
-    await openai.beta.threads.messages.create(assistantDetails.threadId, {
+    let messageCreateParams: MessageCreateParams = {
         content: text,
         role: 'user'
-    });
+    };
+
+    if (attachedFileId) {
+        messageCreateParams = {
+            ...messageCreateParams, 
+            attachments: [{ file_id: attachedFileId, tools: [{ type: "file_search" }] }]
+        };
+    }
+
+    // passing the user's message into the main thread
+    await openai.beta.threads.messages.create(assistantDetails.threadId, messageCreateParams);
 
     // create a run
     const run = await openai.beta.threads.runs.create(assistantDetails.threadId, {
@@ -84,13 +94,13 @@ export async function getResponse(text: string): Promise<Message> {
         throw new Error('failed to process the request');
     }
 
-
     return (
         {
             content: (assistantResponse.content[0] as TextContentBlock).text.value,
             created_at: assistantResponse.created_at,
             id: assistantResponse.id,
             role: assistantResponse.role,
+            isAttached: false,
         }
     );
 }
@@ -115,7 +125,8 @@ export async function getMessageHistory(): Promise<Message[]> {
             content: (message.content[0] as TextContentBlock).text.value,
             created_at: message.created_at,
             id: message.id,
-            role: message.role
+            role: message.role,
+            isAttached: message.attachments?.[0]?.file_id ? true : false,
         });
     }).sort((a, b) => a.created_at - b.created_at));
 }

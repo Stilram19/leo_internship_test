@@ -3,6 +3,7 @@ export interface ChatMessage {
 	role: 'user' | 'assistant';
 	content: string;
 	created_at: number;
+	isAttached: boolean;
 }
 
 export interface ChatHistoryProps {
@@ -22,10 +23,12 @@ export function isOfChatMessageType(obj: unknown): obj is ChatMessage {
 		&& 'role' in obj
 		&& 'content' in obj
 		&& 'created_at' in obj
+		&& 'isAttached' in obj
 		&& typeof obj.id === 'string'
 		&& (obj.role === 'user' || obj.role === 'assistant')
 		&& typeof obj.content === 'string'
 		&& typeof obj.created_at === 'number'
+		&& typeof obj.isAttached === 'boolean'
 	);
 }
 
