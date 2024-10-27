@@ -1,29 +1,29 @@
-import { createServer } from "node:http";
-import next from "next";
-import { Server } from "socket.io";
-import dotenv from 'dotenv'
-import { onConnect } from "./src/sockets/index"
+// import { createServer } from "node:http";
+// import next from "next";
+// import { Server } from "socket.io";
+// import dotenv from 'dotenv'
+// import { onConnect } from "./src/sockets/index"
 
-dotenv.config()
-const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 3000;
-const app = next({ dev, hostname, port });
-const handler = app.getRequestHandler();
+// dotenv.config()
+// const dev = process.env.NODE_ENV !== "production";
+// const hostname = "localhost";
+// const port = 3000;
+// const app = next({ dev, hostname, port });
+// const handler = app.getRequestHandler();
 
-app.prepare().then(() => {
-  const httpServer = createServer(handler);
+// app.prepare().then(() => {
+//   const httpServer = createServer(handler);
 
-  const io = new Server(httpServer);
+//   const io = new Server(httpServer);
 
-  io.on("connection", onConnect);
+//   io.on("connection", onConnect);
 
-  httpServer
-    .once("error", (err) => {
-      console.error(err);
-      process.exit(1);
-    })
-    .listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
-    });
-});
+//   httpServer
+//     .once("error", (err) => {
+//       console.error(err);
+//       process.exit(1);
+//     })
+//     .listen(port, () => {
+//       console.log(`> Ready on http://${hostname}:${port}`);
+//     });
+// });

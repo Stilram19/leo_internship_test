@@ -82,7 +82,6 @@ async function getResponse(data: EmittedMessage, socket: Socket) {
 
 
 export function onConnect(socket: Socket) {
-    console.log("Soket connection")
     socket.on('sendUserMessage', (data) => {
         if (!isOfEmittedMessageType(data)) {
             socket.disconnect();
