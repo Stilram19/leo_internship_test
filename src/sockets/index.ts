@@ -1,6 +1,6 @@
 import { getAssistant } from "@/pages/api/services/assistantDetails.service";
 import { openai } from "@/pages/api/services/openAiConf";
-import { Message, MessageCreateParams, MessageDeltaEvent, TextContentBlock, TextDeltaBlock } from "openai/resources/beta/threads/messages.mjs";
+import { MessageCreateParams, MessageDeltaEvent, TextDeltaBlock } from "openai/resources/beta/threads/messages.mjs";
 import { Socket } from "socket.io";
 
 interface EmittedMessage {
@@ -55,13 +55,11 @@ async function getResponse(data: EmittedMessage, socket: Socket) {
             continue ;
         }
 
-        console.log(event);
-        console.log(deltaText);
+        // console.log(event);
+        // console.log(deltaText);
         // emit(text);
         socket.emit('sendAssistantMessageChunk', deltaText.value);
     }
-
-    console.log('DONE!!!!!!')
 
     // emit to doneStreaming
 	socket.emit('doneStreaming');
@@ -84,6 +82,7 @@ async function getResponse(data: EmittedMessage, socket: Socket) {
 
 
 export function onConnect(socket: Socket) {
+    console.log("Soket connection")
     socket.on('sendUserMessage', (data) => {
         if (!isOfEmittedMessageType(data)) {
             socket.disconnect();

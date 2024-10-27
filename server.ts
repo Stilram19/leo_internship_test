@@ -4,7 +4,6 @@ import { Server } from "socket.io";
 import dotenv from 'dotenv'
 import { onConnect } from "./src/sockets/index"
 
-
 dotenv.config()
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
