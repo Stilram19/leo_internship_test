@@ -18,11 +18,7 @@ interface NextApiResponseWithSocket extends NextApiResponse {
 
 export default function handler(req: NextApiRequest, res: NextApiResponseWithSocket) {
     // console.log(req);
-    if (res.socket.server.io) {
-        console.log('Socket is already running.')
-    } else {
-        console.log('Socket is initializing...')
-
+    if (!res.socket.server.io) {
         const io = new IOServer(res.socket.server)
         res.socket.server.io = io
     

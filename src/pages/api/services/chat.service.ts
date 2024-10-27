@@ -120,7 +120,7 @@ export async function getMessageHistory(): Promise<Message[]> {
         throw new Error('failed to process the request');
     }
 
-    return (historyMessages.map(message => {
+    return (historyMessages.filter(message => Boolean(message.content[0])).map(message => {
         return ({
             content: (message.content[0] as TextContentBlock).text.value,
             created_at: message.created_at,
