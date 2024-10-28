@@ -55,12 +55,10 @@ export default function Home() {
 	}, []);
 
 	useEffect(() => {
-		console.log("REgitering events")
 		const callback = (data: unknown) => {
 			if (typeof data != 'string') {
 				return ;
 			}
-			console.log(data)
 			setIsLoading(false);
 
 			setMessages((prevMessages) => {

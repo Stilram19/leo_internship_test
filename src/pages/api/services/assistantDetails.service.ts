@@ -1,8 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { openai } from "./openAiConf";
 import { AssistantCreateParams } from "openai/resources/beta/assistants.mjs";
-import { AssistantDetails, isOfIAssistantDetailsType } from "../types/assistantDetails.type";
-import path from "path";
+import { AssistantDetails } from "../types/assistantDetails.type";
+
+const assistantDetails = await createAssistant();
 
 /**
  * @brief creates an assistant and a thread, and returns an assistant details
@@ -22,52 +22,10 @@ async function createAssistant(): Promise<AssistantDetails> {
 }
 
 /**
- * @brief returns the details about the current Assistant.
- * If no assistant exists, it creates one and returns it.
- * It returns undefined in case of an error
-*/
-export async function getAssistant(): Promise<AssistantDetails | undefined> {
-    // const assetsDir = path.join(__dirname, '..', 'assets');
-    const assetsDir = path.join('/tmp', 'assets');
-
-    if (!existsSync(assetsDir)) {
-        mkdirSync(assetsDir);
-    }
-
-    const assistantFilePath = path.resolve(assetsDir, 'assitant_details.json');
-
-    const fileExists = existsSync(assistantFilePath);
-    let assistantDetails: AssistantDetails;
-
-    if (!fileExists) {
-        assistantDetails = await createAssistant();
-        writeFileSync(assistantFilePath, JSON.stringify(assistantDetails));
-        return (assistantDetails);
-    }
-
-    const assistantData = readFileSync(assistantFilePath, 'utf-8');
-    assistantDetails = JSON.parse(assistantData);
-
-    if (isOfIAssistantDetailsType(assistantDetails) === false) {
-        return (undefined);
-    }
-
-    return (assistantDetails);
-}
-
-/**
  * @brief updates the assistant details file
  */
-export function updateAssistant(assistantDetails: AssistantDetails): void {
-    // const assetsDir = path.join(__dirname, '..', 'assets');
-    const assetsDir = path.join('/tmp', 'assets');
-
-    if (!existsSync(assetsDir)) {
-        mkdirSync(assetsDir);
-    }
-
-    const assistantFilePath = path.resolve(assetsDir, 'assitant_details.json');
-
-
-    writeFileSync(assistantFilePath, JSON.stringify(assistantDetails));
+export function updateFileIds(fileIds: string[]): void {
+    assistantDetails.fileIds = fileIds;
 }
+
+export default assistantDetails;

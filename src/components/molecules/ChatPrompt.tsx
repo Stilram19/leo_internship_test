@@ -27,7 +27,6 @@ const ChatPrompt:FC<ChatPromptProps> = ( { disabled, updateMessages } ) => {
       formData.append('file', file);
 
       setIsFileUploading(true);
-      console.log("Uploading file")
       const response = await fetch('/api/uploadFile', {
         method: 'POST',
         body: formData,
@@ -66,7 +65,6 @@ const ChatPrompt:FC<ChatPromptProps> = ( { disabled, updateMessages } ) => {
       role: 'user',
       content: text,
       created_at: Date.now() / 1000,
-      id: Date.now().toString(),
       isAttached: file !== null
     })
 
@@ -77,7 +75,6 @@ const ChatPrompt:FC<ChatPromptProps> = ( { disabled, updateMessages } ) => {
       role: 'assistant',
       content: '',
       created_at: Date.now() / 1000,
-      id: Date.now().toString(),
       isAttached: false
     });
 

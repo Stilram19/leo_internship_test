@@ -2,7 +2,7 @@ import formidable from 'formidable';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { uploadFile } from './services/chat.service';
 import path from 'path';
-import { existsSync, mkdirSync, renameSync, unlinkSync } from 'fs';
+import { renameSync } from 'fs';
 
 export const config = {
     api: {
@@ -31,19 +31,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             const originalFilename = uploadedFile.originalFilename ?? 'uploaded_file'; // Ensure original name is used
             const extension = path.extname(originalFilename);
 
-            // const uploadDir = path.join(__dirname, 'uploads');
-            const uploadDir = path.join('/tmp', 'uploads');
 
-            if (!existsSync(uploadDir)) {
-                mkdirSync(uploadDir);
-            }
+            const pathWithExtension = uploadedFile.filepath + `${Date.now()}${extension}`;
+            renameSync(uploadedFile.filepath, pathWithExtension);
 
-            const destinationPath = path.join(uploadDir, `${Date.now()}${extension}`);
-            renameSync(uploadedFile.filepath, destinationPath);
-            fileId = await uploadFile(destinationPath);
-            // remove the new file from uploads
-            unlinkSync(destinationPath);
-
+            fileId = await uploadFile(pathWithExtension);
             res.status(200).json({fileId});
         } catch (err: unknown) {
             console.log(err);
